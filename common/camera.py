@@ -16,8 +16,8 @@ class camera:
 
     def __open(self):
         self._cap = cv2.VideoCapture(self._dev_num)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._hsize)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._vsize)
+        self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._hsize)
+        self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._vsize)
         if not self._cap.isOpened():
             raise Exception("Cannot open camera " + str(self._dev_num) + " with " + str(self._hsize) + "x" + str(self._vsize))
 
