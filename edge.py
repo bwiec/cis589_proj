@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 from common.camera import camera
+from algorithm.algorithm_edge import algorithm_edge
 import sys
 import argparse
 import cv2
@@ -22,10 +23,11 @@ if __name__ == "__main__":
     args = arg_parser.parse_args(Args)
 
     cam = camera()
-
+    algorithm = algorithm_edge()
+    
     while True:
         frame, capture_duration = cam.read()
-        process_duration = process(frame)
+        process_duration = algorithm.process(frame)
         if args.print_duration:
             print('capture_duration: ' + str(capture_duration))
             print('process_duration: ' + str(process_duration))
