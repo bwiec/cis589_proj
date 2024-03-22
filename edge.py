@@ -18,9 +18,22 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(prog=sys.argv[0], description='Edge-based ML implementation on AMD/Xilinx KV260')
     arg_parser.add_argument('--print_duration', action='store_true', help='Print processing duration to console')
     arg_parser.add_argument('--display', action='store_true', help='Display resulting image')
+    arg_parser.add_argument('--test_image', action='store', nargs=1, help='Test with an image (i.e. .jpg) instead of camera stream')
     Args = sys.argv
     Args.pop(0)
     args = arg_parser.parse_args(Args)
+    
+    if args.test_image != '':
+        frame = args.test_image[0]
+        algorithm = algorithm_edge()
+        process_duration = algorithm.process(frame)
+        if args.print_duration:
+            print('process_duration: ' + str(process_duration))
+        if args.display:
+            cv2.imshow('Test image', cv2.imread(frame))
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        exit()
 
     cam = camera()
     algorithm = algorithm_edge()
