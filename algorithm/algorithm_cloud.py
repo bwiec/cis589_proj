@@ -18,12 +18,12 @@ class algorithm_cloud:
         duration = -1
         if self._algorithm == 'detect_faces':
             duration, faces_count = self._show_faces(frame)
-            if print:
+            if self._print:
                 print("Faces detected: " + str(faces_count))
 
         if self._algorithm == 'detect_labels':
             label_count = self._detect_labels_local_file(frame)
-            if print:
+            if self._print:
                 print("Labels detected: " + str(label_count))
 
         return duration
@@ -35,7 +35,7 @@ class algorithm_cloud:
             response = self._client.detect_faces(Image={'Bytes': image.read()})
             end = time.time()
             duration = end-start
-            if print:
+            if self._print:
                 print('inference time: ' + str(duration))
 
         image = Image.open(photo)
@@ -44,7 +44,7 @@ class algorithm_cloud:
         draw = ImageDraw.Draw(image)
         
         # calculate and display bounding boxes for each detected face
-        if print:
+        if self._print:
             print('Detected faces for ' + photo)
         for faceDetail in response['FaceDetails']:
             #print('The detected face is between ' + str(faceDetail['AgeRange'] ['Low']) + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
@@ -53,7 +53,7 @@ class algorithm_cloud:
             top = imgHeight * box['Top']
             width = imgWidth * box['Width']
             height = imgHeight * box['Height']
-            if print:
+            if self._print:
                 print('Left: ' + '{0:.0f}'.format(left))
                 print('Top: ' + '{0:.0f}'.format(top))
                 print('Face Width: ' + "{0:.0f}".format(width))
@@ -78,10 +78,10 @@ class algorithm_cloud:
             response = self._client.detect_labels(Image={'Bytes': image.read()})
             end = time.time()
             duration = end-start
-            if print:
+            if self._print:
                 print('inference time: ' + str(duration))
         
-        if print:
+        if self._print:
             print('Detected labels in ' + photo)
             for label in response['Labels']:
                 print(label['Name'] + ' : ' + str(label['Confidence']))
