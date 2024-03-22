@@ -91,16 +91,16 @@ if __name__ == "__main__":
     Args.pop(0)
     args = arg_parser.parse_args(Args)
 
-    if args.algorithm != 'detect_faces' or args.algorithm != 'detect_labels':
-        raise Exception("Unsupported algorithm " + args.algorithm)
+    if args.algorithm[0] != 'detect_faces' and args.algorithm[0] != 'detect_labels':
+        raise Exception("Unsupported algorithm " + str(args.algorithm))
     
     if args.test_image != '':
-        frame = args.test_image
-        process_duration = process(frame, args.algorithm)
+        frame = args.test_image[0]
+        process_duration = process(frame, args.algorithm[0])
         if args.print_duration:
             print('process_duration: ' + str(process_duration))
         if args.display:
-            cv2.imshow('Test image', frame)
+            cv2.imshow('Test image', cv2.imread(frame))
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         exit()
@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
     while True:
         frame, capture_duration = cam.read()
-        process_duration = process(frame, args.algorithm)
+        process_duration = process(frame, args.algorithm[0])
         if args.print_duration:
             print('capture_duration: ' + str(capture_duration))
             print('process_duration: ' + str(process_duration))
