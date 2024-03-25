@@ -35,11 +35,11 @@ if __name__ == "__main__":
     algorithm = algorithm_cloud(args.algorithm[0])
     while True:
         frame, capture_duration = cam.read()
-        process_duration = algorithm.process(frame)
+        image, process_duration = algorithm.process(frame)
         if args.print_duration:
             print('capture_duration: ' + str(capture_duration))
             print('process_duration: ' + str(process_duration))
         if args.display:
-            cam.display(frame)
+            cam.display(image)
             if cv2.waitKey(1) == ord('q'):
                 break

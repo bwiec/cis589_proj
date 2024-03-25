@@ -1,7 +1,10 @@
 import boto3
 import time
 import io
+import cv2
+import base64
 from PIL import Image, ImageDraw
+import numpy as np
 
 class algorithm_cloud:
     _print = ''
@@ -16,7 +19,7 @@ class algorithm_cloud:
     def process(self, frame):
         duration = -1
         if self._algorithm == 'detect_faces':
-            duration, faces_count = self._show_faces(frame)
+            image, duration, faces_count = self._show_faces(frame)
             if self._print:
                 print("Faces detected: " + str(faces_count))
 
@@ -25,26 +28,31 @@ class algorithm_cloud:
             if self._print:
                 print("Labels detected: " + str(label_count))
 
-        return duration
+        return image, duration
 
     def _show_faces(self, photo):
         duration = -1
-        with open(photo, 'rb') as image:
-            start = time.time()
-            response = self._client.detect_faces(Image={'Bytes': image.read()})
-            end = time.time()
-            duration = end-start
-            if self._print:
-                print('inference time: ' + str(duration))
+        #with open(photo, 'rb') as image:
+        start = time.time()
+        #response = self._client.detect_faces(Image={'Bytes': image.read()})
+        ret, buffer = cv2.imencode('.jpg', photo)
+        image_data = base64.b64encode(buffer)
+        image_data_binary = base64.decodebytes(image_data)
+        response = self._client.detect_faces(Image={'Bytes': image_data_binary})
+        end = time.time()
+        duration = end-start
+        if self._print:
+            print('inference time: ' + str(duration))
 
-        image = Image.open(photo)
+        #image = Image.open(photo)
+        image = Image.fromarray(photo)
         
         imgWidth, imgHeight = image.size
         draw = ImageDraw.Draw(image)
         
         # calculate and display bounding boxes for each detected face
         if self._print:
-            print('Detected faces for ' + photo)
+            print('Detected faces for camera stream')
         for faceDetail in response['FaceDetails']:
             #print('The detected face is between ' + str(faceDetail['AgeRange'] ['Low']) + ' and ' + str(faceDetail['AgeRange']['High']) + ' years old')
             box = faceDetail['BoundingBox']
@@ -67,18 +75,20 @@ class algorithm_cloud:
             draw.line(points, fill='#00d400', width=2)
             # Alternatively can draw rectangle. However you can't set line width.
             # draw.rectangle([left,top, left + width, top + height],outline='#00d400')
-        image.show()
-        return duration, len(response['FaceDetails'])
+        #image.show()
+        image_np = np.asarray(image)
+        return image_np, duration, len(response['FaceDetails'])
 
     def _detect_labels_local_file(self, photo):
         duration = -1
-        with open(photo, 'rb') as image:
-            start = time.time()
-            response = self._client.detect_labels(Image={'Bytes': image.read()})
-            end = time.time()
-            duration = end-start
-            if self._print:
-                print('inference time: ' + str(duration))
+        #with open(photo, 'rb') as image:
+        start = time.time()
+        #response = self._client.detect_labels(Image={'Bytes': image.read()})
+        response = self._client.detect_labels(Image={'Bytes': photo})
+        end = time.time()
+        duration = end-start
+        if self._print:
+            print('inference time: ' + str(duration))
         
         if self._print:
             print('Detected labels in ' + photo)

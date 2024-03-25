@@ -85,6 +85,7 @@ sudo su
 ```bash
 . /home/ubuntu/Kria-PYNQ/pynq/sdbuild/packages/xrt/xrt_setup.sh
 . /etc/profile.d/pynq_venv.sh
+xauth add $(xauth -f ~ubuntu/.Xauthority list | tail -1)
 ```
 3. Run the script
 ```bash
