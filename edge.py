@@ -22,15 +22,15 @@ if __name__ == "__main__":
     Args = sys.argv
     Args.pop(0)
     args = arg_parser.parse_args(Args)
-    
-    if args.test_image != '':
-        frame = args.test_image[0]
+        
+    if args.test_image is not None:
+        frame = cv2.imread(args.test_image[0])
         algorithm = algorithm_edge()
-        process_duration = algorithm.process(frame)
+        _, process_duration = algorithm.process(frame)
         if args.print_duration:
             print('process_duration: ' + str(process_duration))
         if args.display:
-            cv2.imshow('Test image', cv2.imread(frame))
+            cv2.imshow('Test image', frame)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         exit()
@@ -40,11 +40,11 @@ if __name__ == "__main__":
     
     while True:
         frame, capture_duration = cam.read()
-        process_duration = algorithm.process(frame)
+        image, process_duration = algorithm.process(frame)
         if args.print_duration:
             print('capture_duration: ' + str(capture_duration))
             print('process_duration: ' + str(process_duration))
         if args.display:
-            cam.display(frame)
+            cam.display(image)
             if cv2.waitKey(1) == ord('q'):
                 break

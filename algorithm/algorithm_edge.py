@@ -54,8 +54,8 @@ class algorithm_edge:
         
     def process(self, frame):
         duration = -1
-        duration = self._run(frame)
-        return duration
+        image, duration = self._run(frame)
+        return image, duration
 
     def _run(self, frame):
         self._dpu = self._overlay.runner
@@ -77,13 +77,12 @@ class algorithm_edge:
                        np.empty(self._shapeOut2, dtype=np.float32, order="C")]
         self._image = self._input_data[0]
         
-        duration = self._run_dpu(frame, display=True)
-        return duration
+        image, duration = self._run_dpu(frame, display=True)
+        return image, duration
         
     def _run_dpu(self, frame, display=False):
-        # Read input image
-        input_image = cv2.imread(frame)
-        
+        input_image = frame
+    
         # Pre-processing
         image_size = input_image.shape[:2]
         image_data = np.array(self._pre_process(input_image, (416, 416)), dtype=np.float32)
@@ -105,9 +104,11 @@ class algorithm_edge:
         boxes, scores, classes = self._evaluate(yolo_outputs, image_size, self._class_names, self._anchors)
         
         if display:
-            _ = self._draw_boxes(input_image, boxes, scores, classes)
+            #_ = self._draw_boxes(input_image, boxes, scores, classes)
+            image = self._draw_bbox(input_image, boxes, classes)
+
         print("Number of detected objects: {}".format(len(boxes)))
-        return end-start
+        return image, end-start
         
     def _letterbox_image(self, image, size):
         ih, iw, _ = image.shape
@@ -205,8 +206,9 @@ class algorithm_edge:
         for i, bbox in enumerate(bboxes):
             coor = np.array(bbox[:4], dtype=np.int32)
             fontScale = 0.5
-            score = bbox[4]
-            class_ind = int(bbox[5])
+            #score = bbox[4]
+            #class_ind = int(bbox[5])
+            class_ind = int(0)
             bbox_color = colors[class_ind]
             bbox_thick = int(0.6 * (image_h + image_w) / 600)
             c1, c2 = (coor[0], coor[1]), (coor[2], coor[3])

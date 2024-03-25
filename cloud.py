@@ -18,7 +18,7 @@ if __name__ == "__main__":
     if args.algorithm[0] != 'detect_faces' and args.algorithm[0] != 'detect_labels':
         raise Exception("Unsupported algorithm " + str(args.algorithm))
     
-    if args.test_image != '':
+    if args.test_image is not None:
         frame = args.test_image[0]
         algorithm = algorithm_cloud(args.algorithm[0])
         process_duration = algorithm.process(frame)

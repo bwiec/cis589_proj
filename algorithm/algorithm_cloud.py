@@ -1,4 +1,3 @@
-import cv2
 import boto3
 import time
 import io
