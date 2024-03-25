@@ -31,8 +31,8 @@ if __name__ == "__main__":
         exit()
 
     cam = camera()
-
-    algorithm = algorithm_cloud(args.algorithm[0])
+    algorithm = algorithm_cloud(args.print_duration, args.algorithm[0])
+    
     while True:
         frame, capture_duration = cam.read()
         image, process_duration = algorithm.process(frame)

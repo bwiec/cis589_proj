@@ -24,7 +24,7 @@ class algorithm_cloud:
                 print("Faces detected: " + str(faces_count))
 
         if self._algorithm == 'detect_labels':
-            label_count = self._detect_labels_local_file(frame)
+            image, duration, label_count = self._detect_labels_local_file(frame)
             if self._print:
                 print("Labels detected: " + str(label_count))
 
@@ -32,9 +32,7 @@ class algorithm_cloud:
 
     def _show_faces(self, photo):
         duration = -1
-        #with open(photo, 'rb') as image:
         start = time.time()
-        #response = self._client.detect_faces(Image={'Bytes': image.read()})
         ret, buffer = cv2.imencode('.jpg', photo)
         image_data = base64.b64encode(buffer)
         image_data_binary = base64.decodebytes(image_data)
@@ -81,18 +79,55 @@ class algorithm_cloud:
 
     def _detect_labels_local_file(self, photo):
         duration = -1
-        #with open(photo, 'rb') as image:
         start = time.time()
-        #response = self._client.detect_labels(Image={'Bytes': image.read()})
-        response = self._client.detect_labels(Image={'Bytes': photo})
+        ret, buffer = cv2.imencode('.jpg', photo)
+        image_data = base64.b64encode(buffer)
+        image_data_binary = base64.decodebytes(image_data)
+        response = self._client.detect_labels(Image={'Bytes': image_data_binary})
         end = time.time()
         duration = end-start
         if self._print:
             print('inference time: ' + str(duration))
+            
+            
+            
+        image = Image.fromarray(photo)
+        
+        imgWidth, imgHeight = image.size
+        draw = ImageDraw.Draw(image)
+        
+        # calculate and display bounding boxes for each detected face
+        if self._print:
+            print('Detected labels for camera stream')
+        for Labels in response['Labels']:
+            for Instances in Labels['Instances']:
+                box = Instances['BoundingBox']
+                left = imgWidth * box['Left']
+                top = imgHeight * box['Top']
+                width = imgWidth * box['Width']
+                height = imgHeight * box['Height']
+                if self._print:
+                    print('Left: ' + '{0:.0f}'.format(left))
+                    print('Top: ' + '{0:.0f}'.format(top))
+                    print('Face Width: ' + "{0:.0f}".format(width))
+                    print('Face Height: ' + "{0:.0f}".format(height))
+                points = (
+                    (left, top),
+                    (left + width, top),
+                    (left + width, top + height),
+                    (left, top + height),
+                    (left, top)
+                )
+                draw.line(points, fill='#00d400', width=2)
+                # Alternatively can draw rectangle. However you can't set line width.
+                # draw.rectangle([left,top, left + width, top + height],outline='#00d400')
+            #image.show()
+        image_np = np.asarray(image)
+          
         
         if self._print:
-            print('Detected labels in ' + photo)
+            print('Detected labels in caamera stream')
             for label in response['Labels']:
                 print(label['Name'] + ' : ' + str(label['Confidence']))
             
-        return duration, len(response['Labels'])
+        return image_np, duration, len(response['Labels'])
