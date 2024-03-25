@@ -26,11 +26,11 @@ if __name__ == "__main__":
     if args.test_image is not None:
         frame = cv2.imread(args.test_image[0])
         algorithm = algorithm_edge()
-        _, process_duration = algorithm.process(frame)
+        image, process_duration = algorithm.process(frame)
         if args.print_duration:
             print('process_duration: ' + str(process_duration))
         if args.display:
-            cv2.imshow('Test image', frame)
+            cv2.imshow('Test image', image)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         exit()

@@ -208,10 +208,12 @@ class algorithm_edge:
             fontScale = 0.5
             #score = bbox[4]
             #class_ind = int(bbox[5])
-            class_ind = int(0)
-            bbox_color = colors[class_ind]
+            #class_ind = int(0)
+            #bbox_color = colors[class_ind]
+            bbox_color = tuple([color/1 for color in self._colors[classes[i]]])
             bbox_thick = int(0.6 * (image_h + image_w) / 600)
-            c1, c2 = (coor[0], coor[1]), (coor[2], coor[3])
+            #c1, c2 = (coor[0], coor[1]), (coor[2], coor[3])
+            c1, c2 = (coor[1], coor[0]), (coor[3], coor[2])
             cv2.rectangle(image, c1, c2, bbox_color, bbox_thick)
         return image
 
